@@ -80,6 +80,6 @@ test:
 #
 production:
   <<: *default
-  database: listapp_production
-  username: listapp
+  database: listapp_instacloud_production
+  username: pk_admin
   password: <%= ENV['LIST-APP_DATABASE_PASSWORD'] %>
