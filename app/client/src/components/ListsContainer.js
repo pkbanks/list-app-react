@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import List from './List';
 import NewListForm from './NewListForm';
+import EditListForm from './EditListForm';
 
 class ListsContainer extends Component {
   constructor(props) {
@@ -10,6 +11,9 @@ class ListsContainer extends Component {
       lists: []
     }
     this.addNewList = this.addNewList.bind(this)
+    this.removeList = this.removeList.bind(this)
+    this.editingList = this.editingList.bind(this)
+    this.editList = this.editList.bind(this)
   }
 
   componentDidMount() {
@@ -35,12 +39,56 @@ class ListsContainer extends Component {
       })
   }
 
+  removeList(id) {
+    axios.delete( 'api/v1/lists/' + id)
+    .then(response => {
+      const lists = this.state.lists.filter(
+        list => list.id !== id
+      )
+      this.setState({lists})
+    })
+    .catch(error => console.log(error))
+  }
+
+  editingList(id) {
+    console.log("hoho")
+    this.setState({
+      editingListId: id
+    })
+  }
+
+  editList(id, title, excerpt) {
+    axios.put( 'api/v1/lists/' + id, {
+      list: {
+        title, excerpt
+      }
+    })
+    .then(response => {
+      console.log(response)
+      const lists = this.state.lists
+      const index = lists.findIndex(list => list.id === id )
+      lists[index] = {id, title, excerpt}
+      this.setState(() => ({
+        lists,
+        editingListId: null
+      }))
+    })
+  }
+
   render() {
     return (
       <div className="lists-container">
         <NewListForm onNewList={this.addNewList} />
         {this.state.lists.map( list => {
-          return (<List list={list} key={list.id} />)
+          if (this.state.editingListId === list.id) {
+            return (<EditListForm
+              list = {list}
+              key={list.id}
+              editList={this.editList}
+            />)
+          } else {
+            return (<List list={list} key={list.id} onRemoveList={this.removeList} editingList={this.editingList} />)
+          }
         })}
       </div>
     )
