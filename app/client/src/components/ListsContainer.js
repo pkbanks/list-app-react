@@ -78,7 +78,11 @@ class ListsContainer extends Component {
   render() {
     return (
       <div className="lists-container">
-        <NewListForm onNewList={this.addNewList} />
+        <div>
+          Create a New List
+          <NewListForm onNewList={this.addNewList} />
+        </div>
+        <hr/>
         {this.state.lists.map( list => {
           if (this.state.editingListId === list.id) {
             return (<EditListForm
